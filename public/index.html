@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Weather App</h1>
+      <form id="weather-form">
+        <input
+          type="text"
+          id="city"
+          name="city"
+          placeholder="Enter city name"
+          required
+        />
+        <button type="submit">Get Weather</button>
+      </form>
+      <div id="result"></div>
+    </div>
+
+    <script>
+      const form = document.getElementById('weather-form');
+      const resultDiv = document.getElementById('result');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const city = document.getElementById('city').value;
+
+        try {
+          const response = await fetch('/weather', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ city }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            resultDiv.innerHTML = `<p style="color: red;">${errorData.error}</p>`;
+            return;
+          }
+
+          const data = await response.json();
+          resultDiv.innerHTML = `
+                    <h2>${data.city}</h2>
+                    <p>Temperature: ${data.temperature}°C</p>
+                    <p>Description: ${data.description}</p>
+                `;
+        } catch (error) {
+          resultDiv.innerHTML = `<p style="color: red;">An error occurred. Please try again.</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>
